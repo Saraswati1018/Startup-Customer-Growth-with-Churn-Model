@@ -25,11 +25,45 @@ This project simulates startup customer growth using a **logistic growth model w
 # -----------------------------
 st.sidebar.header("Simulation Inputs")
 
-k = st.sidebar.number_input("Carrying Capacity (Maximum Customers)", 100, 1000000, 10000, 100)
-r = st.sidebar.number_input("Growth Rate (r)", 0.01, 5.0, 0.30, 0.01)
-churn_rate = st.sidebar.number_input("Churn Rate", 0.00, 1.00, 0.05, 0.01)
-time_steps = st.sidebar.number_input("Number of Time Steps", 1, 300, 50, 1)
-initial_active = st.sidebar.number_input("Initial Active Customers", 1.0, float(k), 100.0, 10.0)
+k = st.sidebar.number_input(
+    "Carrying Capacity (Maximum Customers)",
+    min_value=100,
+    max_value=1000000,
+    value=10000,
+    step=100
+)
+
+r = st.sidebar.number_input(
+    "Growth Rate (r)",
+    min_value=0.01,
+    max_value=5.0,
+    value=0.30,
+    step=0.01
+)
+
+churn_rate = st.sidebar.number_input(
+    "Churn Rate",
+    min_value=0.00,
+    max_value=1.00,
+    value=0.05,
+    step=0.01
+)
+
+time_steps = st.sidebar.number_input(
+    "Number of Time Steps",
+    min_value=1,
+    max_value=300,
+    value=50,
+    step=1
+)
+
+initial_active = st.sidebar.number_input(
+    "Initial Active Customers",
+    min_value=1.0,
+    max_value=float(k),
+    value=100.0,
+    step=10.0
+)
 
 st.sidebar.markdown("---")
 st.sidebar.subheader("Parameter Estimation")
@@ -43,7 +77,7 @@ observed_final_active = st.sidebar.number_input(
 
 run_button = st.sidebar.button("Run Simulation")
 
-# 🔄 Reset Button (simple reload)
+# Reset Button
 reset_button = st.sidebar.button("Reset")
 if reset_button:
     st.rerun()
@@ -136,9 +170,7 @@ if run_button or True:
         st.success(f"Estimated Growth Rate (r): {estimated_r:.4f}")
         st.info(f"Estimation Error: {estimation_error:.4f}")
 
-    # -----------------------------
-    # Combined Graph (FIXED COLORS)
-    # -----------------------------
+    # Combined Graph
     st.subheader("Growth Visualization")
 
     fig1, ax1 = plt.subplots(figsize=(10, 5))
@@ -153,41 +185,34 @@ if run_button or True:
     st.pyplot(fig1)
 
     # -----------------------------
-    # Individual Graphs (MATCHED)
+    # Individual Graphs (SMALL + SAME SHAPE)
     # -----------------------------
     st.subheader("Individual Graphs")
 
-    # Active
-    fig_a, ax_a = plt.subplots(figsize=(10, 5))
+    max_y = max(max(active_list), max(new_list), max(churn_list))
+
+    fig_a, ax_a = plt.subplots(figsize=(6, 3))
     ax_a.plot(active_list, color="blue", label="Active Customers")
+    ax_a.set_ylim(0, max_y)
     ax_a.set_title("Active Customers")
-    ax_a.set_xlabel("Time Step")
-    ax_a.set_ylabel("Number of Customers")
-    ax_a.legend()
     ax_a.grid(True)
     st.pyplot(fig_a)
 
-    # New
-    fig_n, ax_n = plt.subplots(figsize=(10, 5))
+    fig_n, ax_n = plt.subplots(figsize=(6, 3))
     ax_n.plot(new_list, color="orange", linestyle="--", label="New Customers")
+    ax_n.set_ylim(0, max_y)
     ax_n.set_title("New Customers")
-    ax_n.set_xlabel("Time Step")
-    ax_n.set_ylabel("Number of Customers")
-    ax_n.legend()
     ax_n.grid(True)
     st.pyplot(fig_n)
 
-    # Churn
-    fig_c, ax_c = plt.subplots(figsize=(10, 5))
+    fig_c, ax_c = plt.subplots(figsize=(6, 3))
     ax_c.plot(churn_list, color="green", linestyle=":", label="Churned Customers")
+    ax_c.set_ylim(0, max_y)
     ax_c.set_title("Churned Customers")
-    ax_c.set_xlabel("Time Step")
-    ax_c.set_ylabel("Number of Customers")
-    ax_c.legend()
     ax_c.grid(True)
     st.pyplot(fig_c)
 
-    # Retention (unchanged)
+    # Retention Graph (unchanged)
     st.subheader("Retention Analysis")
 
     fig2, ax2 = plt.subplots(figsize=(10, 5))
